@@ -7,6 +7,7 @@
     "polymer": "Polymer/polymer#0.3.4",
     "platform": "Polymer/platform#0.3.4",
     "d3": "latest",
+    "topojson": "latest",
     "th-animated": "https://github.com/thelmanews/th-animated.git",
     "th-theme": "https://github.com/thelmanews/th-theme.git",
     "th-d3-chart": "https://github.com/thelmanews/th-d3-chart.git"
