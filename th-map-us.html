@@ -257,12 +257,13 @@
 
                 self.marks = self.map.selectAll('.mark').data(marks).enter().append('g')
 	            .attr('class', function(d) {
-	                var name = d.state.toLowerCase().replace(/ /g,"-");
+	            	// /[\s\t]+/g is there for cases where there is more than one white space or a tab in the state name (that actually happened)
+	                var name = d.state.toLowerCase().replace(/[\s\t]+/g,"-");
 	                return 'mark data0 mark-'+name;
 	            })
 	            .style('opacity',0)
 	            .attr('transform', function(d, i) {
-	                var name = d.state.toLowerCase().replace(/ /g,"-");
+	                var name = d.state.toLowerCase().replace(/[\s\t]+/g,"-");
 	                //TODO change to a more elegant formatting....
 	            	return 'translate ('+parseInt(centers[name][0]-7)+','+parseInt(centers[name][1]-7)+') scale('+scale+','+scale+')';
 	            })
