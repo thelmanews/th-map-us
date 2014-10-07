@@ -81,6 +81,7 @@
 	</template>
 	
 	<script src="../topojson/topojson.js"></script> 
+	<script src="js/code-to-statename.js"></script> 
 
 	<script>
 	
@@ -140,7 +141,7 @@
 						{"state":"Wyoming","value":0.58640553}
 
 		  	],
-		  	dataLabel: "Medicaid Coverage",
+		  	dataLabel: "Data",
 
 			
 			dataUrls : {
@@ -210,15 +211,19 @@
 
 		  	_processData: function(err, us) {
 		  		this.us = us;
-		  		this._render();
+
+		  		//this._render( this.animateOnInit ? this.animte : null);
 
 		  		if(this.animateOnInit) {
-		  			this.animate();
+		  			this._render(this.animate);
+		  		}
+		  		else {
+		  			this._render();
 		  		}
 
 		  	},
 
-		  	_render: function() {
+		  	_render: function(callback) {
             	var self = this;
 
             	if(!self.us) {
@@ -230,12 +235,17 @@
                 	states = topojson.feature(self.us, self.us.objects.states);
 
 
-            
+            	self.states = null;
+
                 self.states = self.map.selectAll('path.state')
-                    .data(states.features)
-                  .enter().append('path')
-                    .attr('class', function(d) { 
-                        return 'state map-border '+d.properties.name.toLowerCase().replace(/\s/g, '-'); 
+                    .data(states.features);
+
+                  self.states.enter().append('path');
+
+
+                  self.states.attr('class', function(d) { 
+                    	var classes = 'state map-border '+d.properties.name.toLowerCase().replace(/\s/g, '-');
+                        return classes;
                     })
                     .attr('d', self.path)
                     //.style('fill', CoreStyle.g.theme.background)
@@ -245,14 +255,23 @@
                       centers[d.properties.name.toLowerCase().replace(/\s/g, '-')]= centroid;
                     })
                     .attr("color", function(d) { return d.color;})
-                    .attr("state", function(d) { return d.state;})//.toLowerCase();});
+                    .attr("state", function(d) { 
+                    	//TODO: doesn;t do anything! cleanup?
+
+                    	var stateName = d.state || d.label; // accept d.label for consistancy with other charts
+                    	// if(stateName.length==2) {
+                    	// 	stateName = codeToStateName(sateName);
+                    	// }
+
+                    	return stateName;
+                    });
 
 
 
-                var marks = self.chartData.filter(function(d) {
+                var marks = self.chartData ? self.chartData.filter(function(d) {
 
                 		return d.crossed ? d : null;
-                });
+                }) : [];
 
 
                 self.marks = self.map.selectAll('.mark').data(marks).enter().append('g')
@@ -295,7 +314,9 @@
 	            range = CoreStyle.g.theme.mapColors;
 
 				for(index in self.chartData) {
+
 					var name = self.chartData[index].state.replace(/[\s\t]+/g," ");
+					name = self._formatStateName(name);
 					self.dataMap.set(name, self.chartData[index].value);
 				}
 
@@ -308,6 +329,13 @@
 
 				    self.initialized = true;
 		            self.fire('th-ready', {msg: 'element ready', element: this});
+
+
+		        }
+
+		        //call callback (e.g. animate) after setup
+		        if(callback) {
+		        	callback.call(self);
 		        }
 
 
@@ -343,7 +371,7 @@
 					    // self.$.value.innerText = self.dataMap.get(d.properties.name).toFixed(2);
 					    
 					    self.$.label.innerText = self.dataLabel;
-					    self.$.value.innerText = self.dataMap.get(d.properties.name).toFixed(2);
+					    self.$.value.innerText = self.dataMap.get(d.properties.name.toLowerCase()).toFixed(2);
 
 
 					    self.$.legend.style.opacity = 1;
@@ -387,21 +415,36 @@
 	            })
 	            .style('opacity',1);
 
+<<<<<<< HEAD
 	            self.states.transition().duration(pause)
+=======
+	            self.states.transition().duration(pause*10)
+>>>>>>> fixed bugs with changing data
 	            .style('fill',function(d,i) {
 	            	//TODO color doesn't work because d.color is not there
 	            	// self.states has path information and not what is set in the render method, WHY?!?
-			        var pc = d.color ? d.color : self.colors(self.dataMap.get(d.properties.name));
+			        var pc = d.color ? d.color : self.colors(self.dataMap.get(d.properties.name.toLowerCase()));
 			        return pc;
 			        
 			    });
 
 
 		   },
+
 		   updateData: function() {
 		   	var self = this;
-		   	self._render();
-		   	self.animate();
+		   	self._render(self.animate);
+
+		   },
+
+		   _formatStateName: function(dataPoint) {
+		   		var name = dataPoint.state || dataPoint.label; // label for consistancy with other chart types
+		   		name = name.trim();
+		   		if(name && name.length==2) {
+		   			name = codeToStatename[name];
+		   		}
+		   		return name.toLowerCase();
+
 		   },
 
 		   getMetaData: function() {
@@ -426,6 +469,8 @@
 				  }
 				}
 		   }
+
+
                 
             
             
