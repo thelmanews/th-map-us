@@ -295,7 +295,8 @@
 	            range = CoreStyle.g.theme.mapColors;
 
 				for(index in self.chartData) {
-					self.dataMap.set(self.chartData[index].state, self.chartData[index].value);
+					var name = self.chartData[index].state.replace(/[\s\t]+/g," ");
+					self.dataMap.set(name, self.chartData[index].value);
 				}
 
 			      
@@ -385,8 +386,6 @@
 	                return i * pause;
 	            })
 	            .style('opacity',1);
-
-	            console.log(self.states);
 
 	            self.states.transition().duration(pause)
 	            .style('fill',function(d,i) {
