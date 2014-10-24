@@ -315,7 +315,8 @@
 
 				for(index in self.chartData) {
 
-					var name = self.chartData[index].state.replace(/[\s\t]+/g," ");
+					var name = self.chartData[index].state || self.chartData[index].label;
+					name = name.replace(/[\s\t]+/g," ");
 					name = self._formatStateName(name);
 					self.dataMap.set(name, self.chartData[index].value);
 				}
@@ -434,7 +435,7 @@
 		   },
 
 		   _formatStateName: function(dataPoint) {
-		   		var name = dataPoint.state || dataPoint.label; // label for consistancy with other chart types
+		   		var name = dataPoint;//dataPoint.state || dataPoint.label; // label for consistancy with other chart types
 		   		name = name.trim();
 		   		if(name && name.length==2) {
 		   			name = codeToStatename[name];
