@@ -32,19 +32,54 @@
 	      #legend {
 	      	position: absolute;
 	      	transition: opacity 0.7s;
-	      	opacity: 0;
-	      	bottom: 5px;
+	      	opacity: 1;
+	      	bottom: 25px;
 	      	width: 100%;
+	      	font-size: 0.85em;
 	      }
-	      #legend div {
+	      #label, #value {
 	      	display: inline-block;
 	      	height: 1.2em;
 
 	      }
 
 	      #value {
+	      	/*float: right;
+	      	margin-right: 15px;*/
+	      	position: absolute;
+	      	font-size: 1.2em;
+	      	font-weight: bold;
+	      	margin-top: 4px;
+	      	transition: all 0.15s linear;
+	      	left: -20px;
+	      }
+
+	      #value:before {
+	      	content: '';
+	      	width: 0; 
+			height: 0; 
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+	
+			border-bottom: 5px solid black;
+			top: -3px;
+  			left: 40%;
+  			position: absolute;
+	      }
+
+	      #max_value {
 	      	float: right;
 	      	margin-right: 15px;
+	      }
+
+	      #legendScale {
+	      	margin: 0 auto;
+	      }
+	      
+	      #legendScale span {
+	      	
+	      	height: 1em;
+	      	display: inline-block;
 	      }
 
 	      #tip {
@@ -62,7 +97,11 @@
 		<span id="tip">(tap again to zoom out)</span>
 	    <svg id="chart"></svg>
 	    <div id="legend" >
-		    <div id="label"></div>
+	    	<div class="keys">
+	    		<span id="min_value"></span>
+	    		<span id="legendScale"></span>
+	    		<span id="max_value"></span>
+	    	</div>
 		    <div id="value"></div>
 		</div>
 
@@ -172,7 +211,7 @@
             
 	            // projection and path setup
 	            var projection = d3.geo.albersUsa()
-	                .scale(width)
+	                .scale(width * 1.3)
 	                .translate([width / 2, height / 2]);
 	            
 	            self.path = d3.geo.path()
@@ -302,7 +341,7 @@
 	        		return minValue + ((i) * interval);
 	        	});
 
-	            range = CoreStyle.g.theme.mapColors;
+	            var range = CoreStyle.g.theme.mapColors;
 
 				for(index in self.chartData) {
 
@@ -312,10 +351,31 @@
 					self.dataMap.set(name, self.chartData[index].value);
 				}
 
+
 			      
 			    self.colors = d3.scale.threshold()
 			        .domain(domain)
 			        .range(range);
+
+				// spare 0.1 of with on each side for min/max values
+				var colorScaleWidth = self.dims.width * 0.8;
+
+			    // colors in legendScale
+			    d3.select(self.$.legendScale).selectAll('span').data(CoreStyle.g.theme.mapColors).enter().append('span')
+			    	.style('width', colorScaleWidth/7+'px')
+			    	.style('background-color', function(d) { return d;});
+
+			    
+			    self.legendScale = d3.scale.linear()
+			    	.domain([minValue, maxValue])
+			    	.range([self.dims.width*0.1, self.dims.width * 0.8]); 
+
+			   	
+			   
+			   self.$.min_value.innerHTML =  minValue.toFixed(2);
+			   self.$.max_value.innerHTML =  maxValue.toFixed(2);
+
+
 
 			    if(!self.initialized) {
 
@@ -362,11 +422,17 @@
 					    // self.$.label.innerText = self.chartData.state_data.label;
 					    // self.$.value.innerText = self.dataMap.get(d.properties.name).toFixed(2);
 					    
-					    self.$.label.innerText = self.dataLabel;
-					    self.$.value.innerText = self.dataMap.get(d.properties.name.toLowerCase()).toFixed(2);
+					    //self.$.label.innerText = self.dataLabel;
+					    var val = self.dataMap.get(d.properties.name.toLowerCase());
+					    self.$.value.innerText = val.toFixed(2);
+					    
+					    // move value under legend scale.
+					    d3.select(self.$.value)
+					    	.style('left', function() {return self.legendScale(val)+'px'});
+					    
 
 
-					    self.$.legend.style.opacity = 1;
+					    self.$.value.style.opacity = 1;
 
 				    }
 
@@ -376,7 +442,8 @@
 				    k = 1;
 				    self.centered = null;
 
-				    self.$.legend.style.opacity = 0;
+				    self.$.value.style.opacity = 0;
+				    self.$.value.style.left = '-20px';
 				    self.$.state.style.opacity = 0;
 				    self.$.tip.style.opacity = 0;
 
@@ -432,7 +499,7 @@
             
 	            // projection and path setup
 	            var projection = d3.geo.albersUsa()
-	                .scale(width)
+	                .scale(width * 1.3)
 	                .translate([width / 2, height / 2]);
 	            
 	            self.path = d3.geo.path()

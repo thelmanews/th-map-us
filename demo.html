@@ -17,6 +17,7 @@
       var map = document.querySelector('th-map-us');
       map.addEventListener('th-ready', function() {
         //map.reset();
+        /*
         setTimeout(function() {
           //map.animate();
 
@@ -27,18 +28,31 @@
 
 
         },5000);
+*/
 
       });
     });
   </script>
+  <style>
+    .container {
+      width: 400px;
+      height: 350px;
+      border: 1px dotted #AAA;
+    }
+    th-map-us {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
   <link rel="import" href="th-map-us.html">
 
 </head>
 <body unresolved>
 
   <p>An example of using <code>&lt;th-map-us></code>:</p>
-
-  <th-map-us animateOnInit="true"></th-map-us>
+  <div class="container">
+    <th-map-us animateOnInit="true"></th-map-us>
+  </div>
 
 </body>
 </html>
