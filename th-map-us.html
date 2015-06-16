@@ -50,7 +50,8 @@
 	      	font-size: 1.2em;
 	      	font-weight: bold;
 	      	margin-top: 4px;
-	      	transition: opacity 0.3s linear;
+	      	transition: all 0.15s linear;
+	      	left: -20px;
 	      }
 
 	      #value:before {
@@ -210,7 +211,7 @@
             
 	            // projection and path setup
 	            var projection = d3.geo.albersUsa()
-	                .scale(width)
+	                .scale(width * 1.3)
 	                .translate([width / 2, height / 2]);
 	            
 	            self.path = d3.geo.path()
@@ -426,7 +427,7 @@
 					    self.$.value.innerText = val.toFixed(2);
 					    
 					    // move value under legend scale.
-					    d3.select(self.$.value).transition().duration(200)
+					    d3.select(self.$.value)
 					    	.style('left', function() {return self.legendScale(val)+'px'});
 					    
 
@@ -442,6 +443,7 @@
 				    self.centered = null;
 
 				    self.$.value.style.opacity = 0;
+				    self.$.value.style.left = '-20px';
 				    self.$.state.style.opacity = 0;
 				    self.$.tip.style.opacity = 0;
 
@@ -497,7 +499,7 @@
             
 	            // projection and path setup
 	            var projection = d3.geo.albersUsa()
-	                .scale(width)
+	                .scale(width * 1.3)
 	                .translate([width / 2, height / 2]);
 	            
 	            self.path = d3.geo.path()
