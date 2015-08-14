@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../th-d3-chart/th-d3-chart.html">
 
-<polymer-element name="th-map-us" extends="th-d3-chart" attributes="input output">
+<polymer-element name="th-map-us" extends="th-d3-chart" attributes="input output showLegend">
 	<template>
 
 		<core-style ref="theme"></core-style>
@@ -171,7 +171,8 @@
 						{"state":"Wyoming","value":0.58640553}
 
 		  	],
-		  	dataLabel: "Data",
+        dataLabel: "Data",
+        showLegend: true,
 
 			
 			dataUrls : {
@@ -375,7 +376,9 @@
 			   self.$.min_value.innerHTML =  minValue.toFixed(2);
 			   self.$.max_value.innerHTML =  maxValue.toFixed(2);
 
-
+          if(!this.showLegend) {
+            this.$.legend.style.display = 'none';
+          }
 
 			    if(!self.initialized) {
 
